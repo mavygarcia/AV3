@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Funcionario {
+  id             String  @id @default(uuid())
+  nome           String
+  telefone       String
+  endereco       String
+  usuario        String  @unique
+  senha          String  @default("123456")
+  nivelPermissao String  
+  etapas         EtapaFuncionario[]
+}
+
+model Aeronave {
+  codigo     String  @id
+  modelo     String
+  tipo       String  
+  capacidade Int
+  alcance    Int
+  pecas      Peca[]
+  etapas     Etapa[]
+  testes     Teste[]
+}
+
+model Peca {
+  id         String   @id @default(uuid())
+  nome       String
+  tipo       String   
+  fornecedor String
+  status     String   
+  aeronaveId String
+  aeronave   Aeronave @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+}
+
+model Etapa {
+  id           String             @id @default(uuid())
+  nome         String
+  prazo        String
+  status       String             
+  aeronaveId   String
+  aeronave     Aeronave           @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+  funcionarios EtapaFuncionario[]
+}
+
+model EtapaFuncionario {
+  etapaId       String
+  funcionarioId String
+  etapa         Etapa       @relation(fields: [etapaId], references: [id], onDelete: Cascade)
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id], onDelete: Cascade)
+
+  @@id([etapaId, funcionarioId])
+}
+
+model Teste {
+  id         String   @id @default(uuid())
+  tipo       String   
+  resultado  String   
+  aeronaveId String
+  aeronave   Aeronave @relation(fields: [aeronaveId], references: [codigo], onDelete: Cascade)
+}
