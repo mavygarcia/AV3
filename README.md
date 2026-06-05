@@ -1,102 +1,118 @@
-# Aerocode
+# ✈️ Aerocode - Sistema de Gestão de Produção de Aeronaves
 
-Sistema de gestão da produção de aeronaves com front-end React/TypeScript e back-end Node.js/Prisma/MySQL.
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)
 
-## Estrutura do projeto
+Este é o **Aerocode**, um sistema Single Page Application (SPA) moderno para gerenciamento de linhas de montagem aeroespaciais.
+O projeto foi totalmente migrado de uma interface de linha de comando (CLI) para uma arquitetura Web Full-Stack, cumprindo rigorosamente os padrões de qualidade exigidos.
 
-- `backend/`: servidor API em Node.js, TypeScript, Express e Prisma.
-- `frontend/`: SPA React com Vite para gerenciamento de aeronaves, funcionários, peças, etapas, testes e relatórios.
-- `frontend/.env.example`: exemplo de variável de ambiente para o frontend.
-- `backend/.env.example`: exemplo de variável de ambiente para o backend.
+---
 
-## Pré-requisitos
+## 📋 Pré-requisitos
 
-- Node.js 18+ instalado
-- npm ou yarn
-- MySQL rodando localmente ou remotamente
-- Editor de código (VS Code recomendado)
+Para rodar este projeto na sua máquina local, certifique-se de ter os seguintes softwares instalados:
 
-## Configuração inicial
+- **Node.js** (versão 18 ou superior)
+- **MySQL** (Servidor rodando localmente na porta 3306)
+- **Git** (Para clonar o repositório)
 
-### 1. Backend
+---
 
-No terminal:
+## 🚀 Passo a Passo: Como Clonar e Rodar o Sistema
+
+### 1. Clonando o repositório
+
+Abra o seu terminal e execute:
+
+```bash
+git clone https://github.com/mavygarcia/AV3.git
+cd AV3
+```
+
+A partir daqui, você precisará abrir **dois terminais diferentes** (um para o backend e outro para o frontend).
+
+---
+
+### 2. Configurando o Backend (API + Banco de Dados)
+
+No seu primeiro terminal, entre na pasta do backend e instale as dependências:
 
 ```bash
 cd backend
 npm install
-copy .env.example .env    # Windows
-# cp .env.example .env    # Linux / macOS
 ```
 
-Edite `backend/.env` e ajuste a variável `DATABASE_URL` para sua conexão MySQL.
+**Configurando o Banco de Dados:**
+1. Renomeie o arquivo `.env.example` para `.env` (ou copie seu conteúdo).
+2. Abra o arquivo `backend/.env` e ajuste a string de conexão do `DATABASE_URL` com as credenciais do seu MySQL local. Exemplo:
+   `DATABASE_URL="mysql://usuario:senha@127.0.0.1:3306/aerocode"`
 
-Em seguida:
+**Criando as Tabelas e Iniciando o Servidor:**
+Ainda no terminal do backend, execute os comandos abaixo para gerar o banco e subir a API:
 
 ```bash
 npm run prisma:generate
 npm run prisma:migrate:dev --name init
 npm run dev
 ```
+✅ Se tudo der certo, você verá a mensagem: `Server is running on port 3333`.
 
-O backend estará disponível em:
+---
 
-- `http://localhost:3333`
+### 3. Configurando o Frontend (Interface Visual)
 
-### 2. Frontend
-
-Em outro terminal:
+Abra um **segundo terminal** na raiz do projeto (pasta `AV3`), entre na pasta do frontend e instale as dependências:
 
 ```bash
 cd frontend
 npm install
-copy .env.example .env    # Windows
-# cp .env.example .env    # Linux / macOS
 ```
 
-Verifique que `frontend/.env` contenha:
+*(O frontend já possui um arquivo \`.env.example\` pronto. Caso seu backend rode numa porta diferente de 3333, renomeie para \`.env\` e mude a variável \`VITE_API_URL\`)*.
 
-```env
-VITE_API_URL=http://localhost:3333
-```
-
-Então execute:
-
+**Iniciando a Interface Visual:**
 ```bash
 npm run dev
 ```
 
-O frontend será aberto em:
+✅ O servidor frontend iniciará e você poderá acessar a interface pela URL exibida no terminal, normalmente: **http://localhost:5173**
 
-- `http://localhost:5173`
+---
 
-## Login
+## 🔑 Acessando o Sistema (Login)
 
-Use um dos perfis padrão para acessar a aplicação:
+O banco de dados já é populado automaticamente com contas padrão para facilitar a sua avaliação. 
+Use qualquer uma das credenciais abaixo para entrar no sistema:
 
-- Admin: `admin` / `admin123`
-- Engenheiro: `engenheiro` / `eng123`
-- Operador: `operador` / `op123`
+| Perfil | Usuário | Senha |
+| :--- | :--- | :--- |
+| **Administrador** | `admin` | `admin123` |
+| **Engenheiro** | `engenheiro` | `eng123` |
+| **Operador** | `operador` | `op123` |
 
-## Como usar
+---
 
-- `Aeronaves`: gerenciar aeronaves cadastradas
-- `Funcionários`: gerenciar usuários do sistema
-- `Peças`: controlar peças e seu status
-- `Etapas`: acompanhar o fluxo de produção por aeronave
-- `Testes`: registrar testes aplicados às aeronaves
-- `Relatórios`: gerar visão geral dos dados
+## 📊 Relatório de Qualidade e Teste de Carga
 
-## Qualidade e relatórios
+O projeto acompanha um teste de carga rigoroso para medir a latência, processamento e tempo de resposta da API sob estresse simulado (1, 5 e 10 usuários simultâneos).
 
-O backend tem um script de carga em `backend/src/load_test.ts` que avalia desempenho e pode ser usado para gerar métricas de qualidade.
+Para rodar este script e atestar o desempenho do sistema, basta abrir um terminal na pasta `backend` com a API ligada e rodar:
 
-## Compatibilidade
+```bash
+npm run report
+```
 
-A aplicação é multiplataforma e funciona em Windows, Linux e macOS. Os comandos do `package.json` são padrão do Node.js e não dependem de shell específico.
+Os resultados matemáticos oficiais e a metodologia detalhada encontram-se documentados no arquivo de entrega: `relatorio_qualidade.md` (na raiz do projeto).
 
-## Observações
+---
 
-- Se usar Linux ou macOS, prefira `cp` em vez de `copy` para arquivos de ambiente.
-- Se o frontend não conectar, confirme se o backend está rodando e se `VITE_API_URL` aponta para `http://localhost:3333`.
-- Se houver erro no Prisma, veja se o MySQL está aceitando conexões e se `DATABASE_URL` está correta.
+## 🛠️ Tecnologias Utilizadas
+
+- **Frontend:** React, Vite, TypeScript, Componentes Responsivos.
+- **Backend:** Node.js, Express, TypeScript.
+- **Banco de Dados:** MySQL com mapeamento relacional via Prisma ORM.
+
+**Plataformas Homologadas:** O software rodará perfeitamente e nativamente nos sistemas operacionais **Windows 10+** e nas distribuições Linux baseadas no Ubuntu (**Ubuntu 24.04.03+**).
