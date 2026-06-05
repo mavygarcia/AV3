@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -109,6 +110,17 @@ app.post('/aeronaves/:codigo/etapas', async (req, res) => {
 app.patch('/aeronaves/:codigo/etapas/:etapaId', async (req, res) => {
   const { status } = req.body;
   const startProcessing = performance.now();
+
+  if (status === 'ANDAMENTO' || status === 'CONCLUIDA') {
+    const etapaWithFuncs = await prisma.etapa.findUnique({
+      where: { id: req.params.etapaId },
+      include: { funcionarios: true }
+    });
+    if (!etapaWithFuncs || etapaWithFuncs.funcionarios.length === 0) {
+      return res.status(400).json({ error: 'Não é possível iniciar ou finalizar uma etapa sem funcionários vinculados.' });
+    }
+  }
+
   const etapa = await prisma.etapa.update({
     where: { id: req.params.etapaId },
     data: { status },
@@ -185,6 +197,9 @@ app.get('/funcionarios/:id', async (req, res) => {
 app.post('/funcionarios', async (req, res) => {
   const { id, ...rest } = req.body; // Remove id se vier do mock
   const startProcessing = performance.now();
+  if (rest.senha) {
+    rest.senha = await bcrypt.hash(rest.senha, 10);
+  }
   const funcionario = await prisma.funcionario.create({ data: rest });
   const sanitized = {
     id: funcionario.id,
@@ -200,10 +215,14 @@ app.post('/funcionarios', async (req, res) => {
 app.put('/funcionarios/:id', async (req, res) => {
   const startProcessing = performance.now();
   const data = req.body;
-  const funcionario = await prisma.funcionario.update({
-    where: { id: req.params.id },
-    data,
-  });
+  if (data.senha) {
+    data.senha = await bcrypt.hash(data.senha, 10);
+  }
+  try {
+    const funcionario = await prisma.funcionario.update({
+      where: { id: req.params.id },
+      data,
+    });
   const sanitized = {
     id: funcionario.id,
     nome: funcionario.nome,
@@ -213,12 +232,19 @@ app.put('/funcionarios/:id', async (req, res) => {
     nivelPermissao: funcionario.nivelPermissao,
   };
   return sendJson(res, sanitized, startProcessing);
+  } catch (error) {
+    return res.status(404).json({ error: 'Funcionário não encontrado.' });
+  }
 });
 
 app.delete('/funcionarios/:id', async (req, res) => {
   const startProcessing = performance.now();
-  await prisma.funcionario.delete({ where: { id: req.params.id } });
-  return sendJson(res, { message: 'Funcionário removido com sucesso.' }, startProcessing);
+  try {
+    await prisma.funcionario.delete({ where: { id: req.params.id } });
+    return sendJson(res, { message: 'Funcionário removido com sucesso.' }, startProcessing);
+  } catch (e) {
+    return res.status(404).json({ error: 'Funcionário não encontrado.' });
+  }
 });
 
 app.post('/login', async (req, res) => {
@@ -228,7 +254,7 @@ app.post('/login', async (req, res) => {
     where: { usuario },
   });
 
-  if (!funcionario || funcionario.senha !== senha) {
+  if (!funcionario || !(await bcrypt.compare(senha, funcionario.senha))) {
     return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
   }
 
@@ -249,7 +275,7 @@ app.put('/aeronaves/:codigo', async (req, res) => {
   const { pecas, etapas, testes, ...rest } = req.body;
   const startProcessing = performance.now();
 
-  // Limpa os agregados antigos para recriar (estratégia simples de sync)
+  
   await prisma.peca.deleteMany({ where: { aeronaveId: codigo } });
   await prisma.etapa.deleteMany({ where: { aeronaveId: codigo } });
   await prisma.teste.deleteMany({ where: { aeronaveId: codigo } });
@@ -313,16 +339,17 @@ async function seedDefaultData() {
   ];
 
   for (const user of defaultUsers) {
+    const hashedPassword = await bcrypt.hash(user.senha, 10);
     await prisma.funcionario.upsert({
       where: { usuario: user.usuario },
       update: {
         nome: user.nome,
         telefone: user.telefone,
         endereco: user.endereco,
-        senha: user.senha,
+        senha: hashedPassword,
         nivelPermissao: user.nivelPermissao,
       },
-      create: user,
+      create: { ...user, senha: hashedPassword },
     });
   }
 

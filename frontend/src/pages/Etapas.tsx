@@ -40,6 +40,15 @@ export const Etapas: React.FC = () => {
     const aeronave = aeronaves.find(a => a.codigo === aeronaveCodigo);
     if (!aeronave) return;
 
+    // Se estiver iniciando ou finalizando, verificar se tem funcionário associado
+    const etapaAtual = aeronave.etapas?.[etapaIndex];
+    if (novoStatus === StatusEtapa.ANDAMENTO || novoStatus === StatusEtapa.CONCLUIDA) {
+      if (!etapaAtual?.funcionariosIds || etapaAtual.funcionariosIds.length === 0) {
+        alert("Não é possível iniciar ou finalizar uma etapa sem funcionários vinculados.");
+        return;
+      }
+    }
+
     // Se estiver iniciando, verificar se a anterior foi concluída
     if (novoStatus === StatusEtapa.ANDAMENTO && etapaIndex > 0) {
       if (aeronave.etapas?.[etapaIndex - 1]?.status !== StatusEtapa.CONCLUIDA) {

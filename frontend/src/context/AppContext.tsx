@@ -11,7 +11,7 @@ const normalizeAeronave = (a: any): Aeronave => ({
   capacidade: a.capacidade,
   alcance: a.alcance,
   pecas: a.pecas ?? [],
-  etapas: a.etapas ?? [],
+  etapas: (a.etapas ?? []).map((e: any) => ({ ...e, funcionariosIds: e.funcionariosIds ?? [] })),
   testes: a.testes ?? [],
 });
 
@@ -164,10 +164,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         if (a.codigo !== codigo) return a;
         return {
           ...a,
-          etapas: a.etapas.map(e => e.id === etapaId ? {
-            ...e,
-            funcionariosIds: e.funcionariosIds.includes(funcionarioId) ? e.funcionariosIds : [...e.funcionariosIds, funcionarioId]
-          } : e),
+          etapas: a.etapas.map(e => {
+            if (e.id !== etapaId) return e;
+            const atuais = e.funcionariosIds || [];
+            return {
+              ...e,
+              funcionariosIds: atuais.includes(funcionarioId) ? atuais : [...atuais, funcionarioId]
+            };
+          }),
         };
       }));
     } catch (err) {
