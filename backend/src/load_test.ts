@@ -45,7 +45,7 @@ async function runLoadTest(concurrentUsers: number) {
 async function main() {
   console.log("Starting Quality Metrics Test...");
   
-  // Warm up
+  
   try {
     await axios.get(`${API_URL}/aeronaves`);
   } catch (e) {
@@ -58,8 +58,16 @@ async function main() {
   const results10 = await runLoadTest(10);
   
   const allResults = [results1, results5, results10];
+
+  console.log('\nLoad test results:');
+  console.table(allResults.map(r => ({
+    'Usuários': r.users,
+    'Latência RTT (ms)': r.latency.toFixed(2),
+    'Processamento Médio (ms)': r.processingTime.toFixed(2),
+    'Resposta Média (ms)': r.responseTime.toFixed(2)
+  })));
   
-  // Format as Markdown for the report
+  
   const markdown = `
 # Relatório de Qualidade - Desempenho da API
 
@@ -72,14 +80,14 @@ Foram simuladas conexões concorrentes para **1**, **5** e **10** usuários simu
 A definição das métricas baseou-se nos seguintes cálculos:
 - **Tempo de Processamento:** Medido no lado do servidor (Express), interceptando o momento em que a rota começa a processar os dados até o momento em que entrega o JSON.
 - **Tempo de Resposta:** Medido no cliente (script de teste), calculando a diferença entre o \`performance.now()\` antes da requisição sair e após o recebimento completo do pacote de resposta HTTP.
-- **Latência:** Calculada matematicamente pela diferença entre o Tempo de Resposta total e o Tempo de Processamento real do servidor. Como o teste foi executado localmente, foi introduzida uma latência artificial de ~50ms no servidor para simular uma condição de rede realista.
+- **Latência de Ida e Volta (RTT):** Calculada matematicamente pela diferença entre o Tempo de Resposta total e o Tempo de Processamento real do servidor. Como o teste foi executado localmente, foi introduzida uma latência artificial de ~50ms no servidor para simular uma condição de rede realista.
 
 Todas as unidades estão em **milissegundos (ms)**.
 
 ## Resultados
 
-| Usuários Simultâneos | Latência Média (ms) | Tempo de Processamento Médio (ms) | Tempo de Resposta Médio (ms) |
-|----------------------|----------------------|------------------------------------|-------------------------------|
+| Usuários Simultâneos | Latência de Ida e Volta (ms) | Tempo de Processamento Médio (ms) | Tempo de Resposta Médio (ms) |
+|----------------------|------------------------------|------------------------------------|-------------------------------|
 | 1 Usuário          | ${results1.latency.toFixed(2)} | ${results1.processingTime.toFixed(2)} | ${results1.responseTime.toFixed(2)} |
 | 5 Usuários         | ${results5.latency.toFixed(2)} | ${results5.processingTime.toFixed(2)} | ${results5.responseTime.toFixed(2)} |
 | 10 Usuários        | ${results10.latency.toFixed(2)} | ${results10.processingTime.toFixed(2)} | ${results10.responseTime.toFixed(2)} |
@@ -88,26 +96,26 @@ Todas as unidades estão em **milissegundos (ms)**.
 
 \`\`\`mermaid
 xychart-beta
-    title "Latência por Número de Usuários"
+    title "Latência de Ida e Volta por Número de Usuários"
     x-axis ["1 Usuário", "5 Usuários", "10 Usuários"]
-    y-axis "Milissegundos (ms)" 0 --> ${Math.ceil(Math.max(results1.latency, results5.latency, results10.latency) + 50)}
-    bar [${results1.latency.toFixed(2)}, ${results5.latency.toFixed(2)}, ${results10.latency.toFixed(2)}]
+    y-axis "Milissegundos (ms)" 0 --> ${Math.round(Math.max(results1.latency, results5.latency, results10.latency) + 50)}
+    bar [${Math.round(results1.latency)}, ${Math.round(results5.latency)}, ${Math.round(results10.latency)}]
 \`\`\`
 
 \`\`\`mermaid
 xychart-beta
     title "Tempo de Processamento por Número de Usuários"
     x-axis ["1 Usuário", "5 Usuários", "10 Usuários"]
-    y-axis "Milissegundos (ms)" 0 --> ${Math.ceil(Math.max(results1.processingTime, results5.processingTime, results10.processingTime) + 10)}
-    bar [${results1.processingTime.toFixed(2)}, ${results5.processingTime.toFixed(2)}, ${results10.processingTime.toFixed(2)}]
+    y-axis "Milissegundos (ms)" 0 --> ${Math.round(Math.max(results1.processingTime, results5.processingTime, results10.processingTime) + 10)}
+    bar [${Math.round(results1.processingTime)}, ${Math.round(results5.processingTime)}, ${Math.round(results10.processingTime)}]
 \`\`\`
 
 \`\`\`mermaid
 xychart-beta
     title "Tempo de Resposta por Número de Usuários"
     x-axis ["1 Usuário", "5 Usuários", "10 Usuários"]
-    y-axis "Milissegundos (ms)" 0 --> ${Math.ceil(Math.max(results1.responseTime, results5.responseTime, results10.responseTime) + 50)}
-    bar [${results1.responseTime.toFixed(2)}, ${results5.responseTime.toFixed(2)}, ${results10.responseTime.toFixed(2)}]
+    y-axis "Milissegundos (ms)" 0 --> ${Math.round(Math.max(results1.responseTime, results5.responseTime, results10.responseTime) + 50)}
+    bar [${Math.round(results1.responseTime)}, ${Math.round(results5.responseTime)}, ${Math.round(results10.responseTime)}]
 \`\`\`
 
 ## Considerações Finais
