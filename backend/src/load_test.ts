@@ -14,41 +14,17 @@ interface TestScenario {
 }
 
 const scenarios: TestScenario[] = [
-  { label: '[GET] /health', method: 'get', url: '/aeronaves' },
-  { label: '[POST] /auth/login', method: 'post', url: '/login', data: { usuario: 'admin', senha: 'admin123' } },
-  { label: '[GET] /auth/me', method: 'get', url: '/funcionarios/F0001' },
-  { label: '[GET] /dashboard', method: 'get', url: '/aeronaves' },
   { label: '[GET] /aeronaves', method: 'get', url: '/aeronaves' },
-  { label: '[GET] /aeronaves/1', method: 'get', url: '/aeronaves/A320-001' },
-  { label: '[POST] /aeronaves', method: 'post', url: '/aeronaves', data: { codigo: 'TEMP', modelo: 'A', tipo: 'COMERCIAL', capacidade: 1, alcance: 1 } },
-  { label: '[PUT] /aeronaves/1', method: 'put', url: '/aeronaves/A320-001', data: { capacidade: 200 } },
-  { label: '[DELETE] /aeronaves/9999', method: 'delete', url: '/aeronaves/9999' }, 
-  { label: '[GET] /pecas', method: 'get', url: '/aeronaves' },
-  { label: '[GET] /pecas/1', method: 'get', url: '/aeronaves/A320-001' },
-  { label: '[POST] /pecas', method: 'post', url: '/aeronaves/A320-001/pecas', data: { nome: 'P', tipo: 'NACIONAL', fornecedor: 'F', status: 'PRONTA' } },
-  { label: '[PUT] /pecas/1', method: 'put', url: '/aeronaves/A320-001/pecas/1', data: { status: 'PRONTA' } },
-  { label: '[DELETE] /pecas/9999', method: 'delete', url: '/aeronaves/A320-001/pecas/9999' },
+  { label: '[GET] /aeronaves/A320-001', method: 'get', url: '/aeronaves/A320-001' },
+  { label: '[POST] /login', method: 'post', url: '/login', data: { usuario: 'admin', senha: 'admin123' } },
   { label: '[GET] /funcionarios', method: 'get', url: '/funcionarios' },
-  { label: '[GET] /funcionarios/1', method: 'get', url: '/funcionarios/F0001' },
-  { label: '[POST] /funcionarios', method: 'post', url: '/funcionarios', data: { nome: 'A', telefone: '1', endereco: '1', usuario: `U${Math.random()}`, senha: '1', nivelPermissao: 'OPERADOR' } },
-  { label: '[PUT] /funcionarios/1', method: 'put', url: '/funcionarios/F0001', data: { nome: 'B' } },
-  { label: '[DELETE] /funcionarios...', method: 'delete', url: '/funcionarios/9999' },
-  { label: '[GET] /etapas', method: 'get', url: '/aeronaves' },
-  { label: '[GET] /etapas/1', method: 'get', url: '/aeronaves/A320-001' },
-  { label: '[POST] /etapas', method: 'post', url: '/aeronaves/A320-001/etapas', data: { nome: 'E', prazo: '1', status: 'PENDENTE' } },
-  { label: '[PUT] /etapas/1', method: 'put', url: '/aeronaves/A320-001/etapas/1', data: { status: 'CONCLUIDA' } },
-  { label: '[DELETE] /etapas/9999', method: 'delete', url: '/aeronaves/A320-001/etapas/9999' },
-  { label: '[POST] /etapas/1/alocar', method: 'post', url: '/aeronaves/A320-001/etapas', data: {} },
-  { label: '[DELETE] /etapas/1/des...', method: 'delete', url: '/aeronaves/A320-001/etapas/1/desalocar' },
-  { label: '[GET] /testes', method: 'get', url: '/aeronaves' },
-  { label: '[GET] /testes/1', method: 'get', url: '/aeronaves/A320-001' },
-  { label: '[POST] /testes', method: 'post', url: '/aeronaves/A320-001/testes', data: { tipo: 'ELETRICO', resultado: 'APROVADO' } },
-  { label: '[PUT] /testes/1', method: 'put', url: '/aeronaves/A320-001/testes/1', data: { resultado: 'APROVADO' } },
-  { label: '[DELETE] /testes/9999', method: 'delete', url: '/aeronaves/A320-001/testes/9999' },
-  { label: '[GET] /relatorios', method: 'get', url: '/aeronaves' },
-  { label: '[GET] /relatorios/1', method: 'get', url: '/aeronaves/A320-001' },
-  { label: '[POST] /relatorios', method: 'post', url: '/login', data: { usuario: 'admin', senha: 'admin123' } },
-  { label: '[DELETE] /relatorios/9999', method: 'delete', url: '/relatorios/9999' }
+  { label: '[GET] /funcionarios/F0001', method: 'get', url: '/funcionarios/F0001' },
+  { label: '[POST] /funcionarios', method: 'post', url: '/funcionarios', data: { nome: 'Teste Usuário', telefone: '(00) 00000-0000', endereco: 'Rua Teste, 123', usuario: `user_${Date.now()}`, senha: 'senha123', nivelPermissao: 'OPERADOR' } },
+  { label: '[PUT] /funcionarios/F0001', method: 'put', url: '/funcionarios/F0001', data: { nome: 'Funcionário Atualizado' } },
+  { label: '[PUT] /aeronaves/A320-001', method: 'put', url: '/aeronaves/A320-001', data: { capacidade: 180, alcance: 6200 } },
+  { label: '[POST] /aeronaves/A320-001/pecas', method: 'post', url: '/aeronaves/A320-001/pecas', data: { nome: 'Turbina X', tipo: 'IMPORTADA', fornecedor: 'Rolls-Royce', status: 'EM_PRODUCAO' } },
+  { label: '[POST] /aeronaves/A320-001/etapas', method: 'post', url: '/aeronaves/A320-001/etapas', data: { nome: 'Inspeção Final', prazo: '2026-08-01', status: 'PENDENTE' } },
+  { label: '[POST] /aeronaves/A320-001/testes', method: 'post', url: '/aeronaves/A320-001/testes', data: { tipo: 'ELETRICO', resultado: 'APROVADO' } },
 ];
 
 async function runScenario(scenario: TestScenario, users: number) {
@@ -137,6 +113,18 @@ async function main() {
     procTable += `| ${scenario.label} | ${data.processing[0].toFixed(2)} | ${data.processing[1].toFixed(2)} | ${data.processing[2].toFixed(2)} |\n`;
     resTable += `| ${scenario.label} | ${data.response[0].toFixed(2)} | ${data.response[1].toFixed(2)} | ${data.response[2].toFixed(2)} |\n`;
     
+    totalLat[0] += data.latency[0];
+    totalLat[1] += data.latency[1];
+    totalLat[2] += data.latency[2];
+
+    totalProc[0] += data.processing[0];
+    totalProc[1] += data.processing[1];
+    totalProc[2] += data.processing[2];
+
+    totalRes[0] += data.response[0];
+    totalRes[1] += data.response[1];
+    totalRes[2] += data.response[2];
+
     totalLatRoutes1U.push(Number(data.latency[0].toFixed(2)));
     totalLatRoutes5U.push(Number(data.latency[1].toFixed(2)));
     totalLatRoutes10U.push(Number(data.latency[2].toFixed(2)));
@@ -172,10 +160,13 @@ O servidor Node.js/Express foi programado para medir o tempo real de processamen
 ### 2. Script Automatizado de Análise
 Foi desenvolvido um script de testes de estresse em Node.js/TypeScript (\`backend/src/load_test.ts\`), utilizando **axios** com \`Promise.all\` para requisições concorrentes nas escalas de 1, 5 e 10 usuários simultâneos:
 - **Tempo de Resposta**: diferença entre envio e retorno completo no cliente.
+- **Tempo de Processamento**: medido no backend com \`performance.now()\`, capturando apenas o tempo efetivo do servidor após todas as verificações internas.
 - **Latência** = Tempo de Resposta - Tempo de Processamento (RTT de rede puro).
 
+> Observação: a rota \`GET /aeronaves\` inclui um atraso artificial de 50 ms no backend para simular condições de rede realistas. Esse atraso não é contado como processamento do servidor e, portanto, aparece na latência de rede.
+
 ## Resumo Executivo — Médias Gerais
-A tabela abaixo consolida as médias de todas as 35 rotas para cada carga, oferecendo uma visão macro do desempenho do sistema.
+A tabela abaixo consolida as médias de todas as rotas testadas para cada carga, oferecendo uma visão macro do desempenho do sistema.
 
 | Métrica | Média 1U (ms) | Média 5U (ms) | Média 10U (ms) |
 |---|---|---|---|
@@ -230,7 +221,11 @@ ${procTable}
 ${resTable}
 
 ## Conclusão de Qualidade
-Os resultados atestam que o Aerocode possui um backend **extremamente rápido, otimizado e estável** sob concorrência. Todos os tempos de resposta ficaram abaixo de **80 ms**, e o tempo de processamento do servidor não ultrapassou **23 ms** em nenhuma rota. O sistema encontra-se aprovado em quesitos de estabilidade técnica e excelência de entrega.
+Os resultados mostram que o Aerocode mantém boa performance geral e estabilidade sob concorrência. As rotas de CRUD e consultas padrão apresentaram tempos de processamento adequados e comportamento consistente mesmo com maior volume de requisições.
+
+As operações que fazem uso de criptografia (\`POST /login\` e \`POST /funcionarios\`) naturalmente demandam mais CPU quando submetidas a cargas simultâneas, exibindo tempos de processamento e resposta mais elevados. Essa elevação é esperada e faz parte da segurança adicional necessária para autenticação e armazenamento de senha.
+
+O sistema está aprovado em quesitos de estabilidade e entrega, com rotas de dados ágeis e rotas de segurança operando de maneira previsível dentro do perfil esperado para uso de bcrypt.
 `;
 
   const reportPath = path.join(__dirname, '../../docs/relatorio_completo.md');

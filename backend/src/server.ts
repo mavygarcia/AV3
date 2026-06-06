@@ -24,7 +24,8 @@ function sendJson(res: Response, data: any, startProcessing: number, statusCode 
 
 // Aeronaves
 app.get('/aeronaves', async (req, res) => {
-  // Simulate network latency of 50ms to approximate a realistic production scenario.
+  // Simulate network latency of 50ms before processing to approximate a realistic production scenario.
+  // This delay is intentionally not counted in the server processing time, so it appears as latency.
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const startProcessing = performance.now();
